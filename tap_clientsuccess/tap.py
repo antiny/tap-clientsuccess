@@ -5,16 +5,35 @@ from typing import List
 from singer_sdk import Tap, Stream
 from singer_sdk import typing as th  # JSON schema typing helpers
 from tap_clientsuccess.streams import (
-    ClientSuccessStream,
     ClientsStream,
     InteractionsStream,
     ClientDetailStream,
+    ProductsStream,
+    PulseStream,
+    ContactStream,
+    EmployeesStream,
+    StatusesStream,
+    ClientStreamV2,
+    ContactStreamV2,
+    ContractStream,
+    ContactDetailStreamV2,
+    ClientDetailStreamV2,
 )
 
 STREAM_TYPES = [
     ClientsStream,
     InteractionsStream,
     ClientDetailStream,
+    ProductsStream,
+    PulseStream,
+    ContactStream,
+    EmployeesStream,
+    StatusesStream,
+    ClientStreamV2,
+    ContactStreamV2,
+    ContractStream,
+    ContactDetailStreamV2,
+    ClientDetailStreamV2,
 ]
 
 
