@@ -2,7 +2,11 @@ build:
 	docker build -t tap-clientsuccess .
 
 test:
-	docker run --rm -it -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess -c "cd /app && poetry run pytest"
+	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess -c "cd /app && poetry run pytest -vvv"
+
+bash:
+	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess
+
 
 # Meltano commands
 
