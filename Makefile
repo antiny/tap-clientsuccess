@@ -1,3 +1,14 @@
+build:
+	docker build -t tap-clientsuccess .
+
+test:
+	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess -c "cd /app && poetry run pytest -vvv"
+
+bash:
+	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess
+
+# Run the tap in discovery mode
+
 run_tap:
 	poetry run tap-clientsuccess --config ./config.json --catalog catalog.json | target-json > state.json
 
