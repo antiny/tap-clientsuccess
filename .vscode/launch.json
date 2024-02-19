@@ -6,10 +6,11 @@
     "configurations": [
         {
             "name": "tap-clientsuccess",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "program": "tap_clientsuccess",
+            "module": "tap_clientsuccess.tap",
+            "python": "${command:python.interpreterPath}",
             "justMyCode": false,
             "args": [
                 "--config",
