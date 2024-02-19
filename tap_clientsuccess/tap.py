@@ -5,8 +5,18 @@ from __future__ import annotations
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-# TODO: Import your custom stream types here:
-from tap_clientsuccess import streams
+from tap_clientsuccess.streams import (
+    ClientSuccessStream,
+    ClientsStream,
+    InteractionsStream,
+    ClientDetailStream,
+)
+
+STREAM_TYPES = [
+    ClientsStream,
+    # ClientDetailStream,
+    InteractionsStream,
+]
 
 
 class TapClientSuccess(Tap):
@@ -17,41 +27,28 @@ class TapClientSuccess(Tap):
     # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
+            "username",
             th.StringType,
             required=True,
-            secret=True,  # Flag config as protected.
-            description="The token to authenticate against the API service",
+            description="The username to authenticate against the API service"
         ),
         th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType),
+            "password",
+            th.StringType,
             required=True,
-            description="Project IDs to replicate",
-        ),
-        th.Property(
-            "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync",
+            description="The password to authenticate against the API service"
         ),
         th.Property(
             "api_url",
             th.StringType,
-            default="https://api.mysample.com",
-            description="The url for the API service",
+            default="https://api.clientsuccess.com/v1",
+            description="The url for the API service"
         ),
     ).to_dict()
 
-    def discover_streams(self) -> list[streams.ClientSuccessStream]:
-        """Return a list of discovered streams.
-
-        Returns:
-            A list of discovered streams.
-        """
-        return [
-            streams.GroupsStream(self),
-            streams.UsersStream(self),
-        ]
+    def discover_streams(self) -> List[Stream]:
+        """Return a list of discovered streams."""
+        return [stream_class(tap=self) for stream_class in STREAM_TYPES]
 
 
 if __name__ == "__main__":

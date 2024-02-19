@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 import sys
 from typing import Any, Callable, Iterable
 
@@ -20,34 +21,35 @@ _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
 
 # TODO: Delete this is if not using json files for schema definition
 SCHEMAS_DIR = importlib_resources.files(__package__) / "schemas"
-
+# SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 class ClientSuccessStream(RESTStream):
     """ClientSuccess stream class."""
 
-    @property
-    def url_base(self) -> str:
-        """Return the API URL root, configurable via tap settings."""
-        # TODO: hardcode a value here, or retrieve it from self.config
-        return "https://api.mysample.com"
-
+    url_base = "https://api.clientsuccess.com/v1"
     records_jsonpath = "$[*]"  # Or override `parse_response`.
 
     # Set this value or override `get_new_paginator`.
     next_page_token_jsonpath = "$.next_page"  # noqa: S105
 
-    @property
-    def authenticator(self) -> BasicAuthenticator:
-        """Return a new authenticator object.
-
-        Returns:
-            An authenticator instance.
+    def _login(self):
         """
-        return BasicAuthenticator.create_for_stream(
-            self,
-            username=self.config.get("username", ""),
-            password=self.config.get("password", ""),
+        {
+            "access_token": "04a7xxxx-a562-4ad2-xxx-xxx0bxxxx84",
+            "token_type": "Bearer",
+            "expires_in": 43200 # 12 hours
+        }
+        """
+        username = self.config['username']
+        password = self.config['password']
+        body = f"username={username}&password={password}"
+        response = requests.post(
+            url="https://api.clientsuccess.com/v1/auth",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data=body,
         )
+        response.raise_for_status()
+        self.access_token = response.json()["access_token"]
 
     @property
     def http_headers(self) -> dict:
@@ -56,7 +58,10 @@ class ClientSuccessStream(RESTStream):
         Returns:
             A dictionary of HTTP headers.
         """
-        headers = {}
+        if not hasattr(self, 'access_token'):
+            self._login()
+
+        headers = {"Authorization": self.access_token}
         if "user_agent" in self.config:
             headers["User-Agent"] = self.config.get("user_agent")
         # If not using an authenticator, you may also provide inline auth headers:

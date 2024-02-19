@@ -134,3 +134,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.idea/*
+state.json
+catalog.json
+config.json

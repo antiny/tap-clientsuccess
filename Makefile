@@ -2,19 +2,19 @@ build:
 	docker build -t tap-clientsuccess .
 
 test:
-	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess -c "cd /app && poetry run pytest -vvv"
+	docker run --rm -it --env-file .env -v $(PWD):/usr/src/app --entrypoint /bin/bash tap-clientsuccess -c "poetry run pytest -vvv"
 
 bash:
-	docker run --rm -it --env-file .env -v $(PWD):/app --entrypoint /bin/bash tap-clientsuccess
+	docker run --rm -it --env-file .env -v $(PWD):/usr/src/app --entrypoint /bin/bash tap-clientsuccess
 
 
 # Meltano commands
 
 run_tap:
-	poetry run tap-clientsuccess --config ./config.json --catalog catalog.json | target-json > state.json
+	poetry run tap-clientsuccess --config .secrets/config.json --catalog catalog.json | target-jsonl > state.json
 
 run_tap_config:
-	poetry run tap-clientsuccess --config ./config.json --discover > ./catalog.json
+	poetry run tap-clientsuccess --config .secrets/config.json --discover > ./catalog.json
 
 run_meltano:
 	meltano --log-level=debug elt tap-clientsuccess target-jsonl
